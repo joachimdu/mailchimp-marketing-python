@@ -1,39 +1,36 @@
 name: Claude
 
-  on:
-    issue_comment:
-      types: [created]
-    pull_request_review_comment:
-      types: [created]
-    issues:
-      types: [opened, assigned]
-    pull_request_review:
-      types: [submitted]
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
-  jobs:
-    claude:
-      if: |
-        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-        (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-        (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') ||
-  contains(github.event.issue.title, '@claude')))
-      runs-on: ubuntu-latest
-      permissions:
-        contents: write
-        pull-requests: write
-        issues: write
-        id-token: write
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 1
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-        - name: Run Claude Code
-          uses: anthropics/claude-code-action@beta
-          with:
-            anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-            allowed_tools:
-  "Edit,View,GlobTool,GrepTool,BatchTool,WebFetchTool,WebSearch,mcp__github__create_or_update_file,mcp__github__search_r
-  epositories,mcp__github__get_file_contents,mcp__github__list_commits,mcp__github__list_branches"
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@beta
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          allowed_tools: "Edit,View,GlobTool,GrepTool,BatchTool,WebFetchTool,WebSearch,mcp__github__create_or_update_file,mcp__github__search_repositories,mcp__github__get_file_contents,mcp__github__list_commits,mcp__github__list_branches"
